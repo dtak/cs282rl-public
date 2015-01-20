@@ -37,6 +37,7 @@ def test_maze_basic():
 
 def test_actions():
     task = domains.FullyObservableSimpleMazeTask(maze)
+    eq_(task.num_actions, len(task.actions))
     is_S_action = [action[0] == 1 and action[1] == 0 for action in task.actions]
     assert np.sum(is_S_action) == 1
 

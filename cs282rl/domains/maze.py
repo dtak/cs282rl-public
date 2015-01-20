@@ -94,6 +94,7 @@ class FullyObservableSimpleMazeTask(object):
         self.random_state = check_random_state(random_state)
 
         self.actions = [maze_actions[direction] for direction in "NSEW"]
+        self.num_actions = len(self.actions)
         self.state = None
         self.reset()
         self.num_states = self.maze.shape[0] * self.maze.shape[1]
@@ -126,7 +127,7 @@ class FullyObservableSimpleMazeTask(object):
             return self.observe(), 0
 
         if self.action_error_prob and self.random_state.rand() < self.action_error_prob:
-            action_idx = self.random_state.choice(len(self.actions))
+            action_idx = self.random_state.choice(self.num_actions)
         action = self.actions[action_idx]
         new_state, result = move_avoiding_walls(self.maze, self.state, action)
         self.state = new_state

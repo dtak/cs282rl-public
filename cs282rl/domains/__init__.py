@@ -1,3 +1,3 @@
-from .maze import FullyObservableSimpleMaze
+from .maze import Maze, FullyObservableSimpleMazeTask
 
-__all__ = ['FullyObservableSimpleMaze']
+__all__ = ['Maze', 'FullyObservableSimpleMazeTask']

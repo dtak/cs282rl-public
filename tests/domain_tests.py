@@ -34,6 +34,12 @@ def test_maze_basic():
     assert np.isscalar(reward)
 
 
+def test_actions():
+    task = domains.FullyObservableSimpleMazeTask(maze)
+    is_S_action = [action[0] == 1 and action[1] == 0 for action in task.actions]
+    assert np.sum(is_S_action) == 1
+
+
 def test_goals():
     # Since there is only one possible empty state, we can check the outcomes of all possible actions.
     for absorbing_end_state in [False, True]:
@@ -44,12 +50,10 @@ def test_goals():
 
         resulting_states = []
         resulting_rewards = []
-        idx_of_S_action = None
         for action_idx, action in enumerate(task.actions):
             task.reset()
             cur_state, reward = task.perform_action(action_idx)
             if action[0] == 1 and action[1] == 0:
-                idx_of_S_action = action_idx
                 eq_(reward, 10)
                 if absorbing_end_state:
                     eq_(cur_state, task.num_states - 1)
@@ -63,4 +67,3 @@ def test_goals():
                 eq_(cur_state, start_state)
                 eq_(reward, 0)
 
-        assert idx_of_S_action is not None

@@ -94,14 +94,18 @@ class FullyObservableSimpleMazeTask(object):
             self.num_states += 1
 
     def reset(self):
+        """
+        Reset the position to a starting position (an 'o'), chosen at random.
+        """
         options = self.maze.positions_containing('o')
         self.state = options[np.random.choice(len(options))]
 
     def observe(self):
         """
-        Fully observable. Use flattened indices.
+        Return the current state as an integer.
 
-        If the end state is absorbing, the n*m+1th state is that absorbing state.
+        The state is the index into the flattened maze. If the end state is
+        absorbing, the n*m+1th state is that absorbing state.
         """
         if self.state is None:
             return self.num_states - 1

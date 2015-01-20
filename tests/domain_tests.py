@@ -15,6 +15,14 @@ def setup():
     global maze
     maze = domains.Maze(maze_structure)
 
+def test_maze():
+    eq_(maze[0, 0], '#')
+    eq_(maze[2, 1], '*')
+    assert_raises(IndexError, lambda: maze[-1, 0])
+    eq_(maze.positions_containing('*'), [(2, 1)])
+    open_positions = maze.positions_not_containing('#')
+    eq_(list(sorted(open_positions)), [(1, 1), (2, 1)])
+
 
 def test_maze_basic():
     task = domains.FullyObservableSimpleMazeTask(maze)

@@ -1,5 +1,6 @@
 from __future__ import absolute_import, print_function, unicode_literals, division
 import numpy as np
+import scipy.stats.distributions
 
 from nose.tools import *
 from cs282rl import domains
@@ -67,3 +68,21 @@ def test_goals():
                 eq_(cur_state, start_state)
                 eq_(reward, 0)
 
+
+def test_stochasticity():
+    task = domains.FullyObservableSimpleMazeTask(maze, action_error_prob=.5)
+
+    # Try to go South. Half the time we'll take a random action, and for 1/4 of
+    # those we'll also go South, so we'll get a reward 1/2(1) + 1/2(1/4) = 5/8
+    # of the time.
+    action_idx = [action[0] == 1 and action[1] == 0 for action in task.actions].index(True)
+
+    times_rewarded = 0
+    N = 10000
+    for i in range(N):
+        task.reset()
+        observation, reward = task.perform_action(action_idx)
+        if reward:
+            times_rewarded += 1
+
+    assert .025 < scipy.stats.distributions.binom.cdf(times_rewarded, N, 5./8) < .975

@@ -1,5 +1,5 @@
 import numpy as np
-#from sklearn.util import check_random_state
+from ..utils import check_random_state
 
 
 # Maze state is represented as a 2-element NumPy array: (Y, X). Increasing Y is South.
@@ -79,12 +79,19 @@ class FullyObservableSimpleMazeTask(object):
      '*': goal
      'o': origin
     """
+
     GOAL_MARKER = '*'
+
     # Internally, we represent being in the special absorbing end state as state=None.
-    def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10}):
+
+    def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10},
+        action_error_prob=0, random_state=None):
+
         self.maze = maze
         self.absorbing_end_state = absorbing_end_state
         self.rewards = rewards
+        self.action_error_prob = action_error_prob
+        self.random_state = check_random_state(random_state)
 
         self.actions = [maze_actions[direction] for direction in "NSEW"]
         self.state = None
@@ -98,7 +105,7 @@ class FullyObservableSimpleMazeTask(object):
         Reset the position to a starting position (an 'o'), chosen at random.
         """
         options = self.maze.positions_containing('o')
-        self.state = options[np.random.choice(len(options))]
+        self.state = options[self.random_state.choice(len(options))]
 
     def observe(self):
         """
@@ -118,6 +125,8 @@ class FullyObservableSimpleMazeTask(object):
         if self.state is None:
             return self.observe(), 0
 
+        if self.action_error_prob and self.random_state.rand() < self.action_error_prob:
+            action_idx = self.random_state.choice(len(self.actions))
         action = self.actions[action_idx]
         new_state, result = move_avoiding_walls(self.maze, self.state, action)
         self.state = new_state

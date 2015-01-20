@@ -1,7 +1,19 @@
 from __future__ import absolute_import, print_function, unicode_literals, division
 
 from nose.tools import *
-import cs282rl
+from cs282rl import domains
 
-def test_import():
-    print("Import successful!")
+maze_structure = structure_raw = [
+    'xxxxxxxxx',
+    'x..x...*x',
+    'x..x..x.x',
+    'x..x..x.x',
+    'x..x.xx.x',
+    'x.....x.x',
+    'xxxxxxx.x',
+    'x.......x',
+    'xxxxxxxxx']
+
+
+def test_maze():
+    maze = domains.FullyObservableSimpleMaze(maze_structure)

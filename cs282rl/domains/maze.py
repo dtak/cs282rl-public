@@ -17,6 +17,9 @@ def parse_topology(topology):
 
 
 class Maze(object):
+    """
+    Simple wrapper around a NumPy 2D array to handle indexing and staying in bounds.
+    """
     def __init__(self, topology):
         self.topology = parse_topology(topology)
         self.shape = self.topology.shape
@@ -41,6 +44,9 @@ class Maze(object):
 
 
 def move_avoiding_walls(maze, position, action):
+    """
+    Return the new position after moving.
+    """
     # Compute new position
     new_position = position + action
 
@@ -63,7 +69,7 @@ class FullyObservableSimpleMazeTask(object):
         maze topology (see below)
 
     absorbing_end_state: boolean.
-        If True, after reaching the goal, we go into an absorbing zero-reward end state.
+        If True, after reaching the goal, we go into an absorbing zero-reward end state with the maximal index.
 
     rewards: dict of string to number. default: {'*': 10}.
         Rewards obtained by being in a maze grid with the specified contents, or experiencing the

@@ -94,7 +94,7 @@ class GridWorld(object):
     def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10},
         action_error_prob=0, random_state=None):
 
-        self.maze = maze
+        self.maze = Maze(maze) if not isinstance(maze, Maze) else maze
         self.absorbing_end_state = absorbing_end_state
         self.rewards = rewards
         self.action_error_prob = action_error_prob

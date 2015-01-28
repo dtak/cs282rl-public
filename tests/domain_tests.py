@@ -5,23 +5,19 @@ import scipy.stats.distributions
 from nose.tools import *
 from cs282rl import domains
 
-maze_structure = [
+maze = [
     '###',
     '#o#',
     '#*#',
     '###']
 
-
-def setup():
-    global maze
-    maze = domains.Maze(maze_structure)
-
-def test_maze():
-    eq_(maze[0, 0], '#')
-    eq_(maze[2, 1], '*')
-    assert_raises(IndexError, lambda: maze[-1, 0])
-    eq_(maze.positions_containing('*'), [(2, 1)])
-    open_positions = maze.positions_not_containing('#')
+def test_maze_wrapper():
+    maze_wrapper = domains.Maze(maze)
+    eq_(maze_wrapper[0, 0], '#')
+    eq_(maze_wrapper[2, 1], '*')
+    assert_raises(IndexError, lambda: maze_wrapper[-1, 0])
+    eq_(maze_wrapper.positions_containing('*'), [(2, 1)])
+    open_positions = maze_wrapper.positions_not_containing('#')
     eq_(list(sorted(open_positions)), [(1, 1), (2, 1)])
 
 

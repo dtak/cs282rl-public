@@ -26,17 +26,15 @@ def test_maze():
 
 
 def test_maze_basic():
-    task = domains.FullyObservableSimpleMazeTask(maze)
+    task = domains.GridWorld(maze)
     start_state = task.observe()
+    assert np.isscalar(start_state)
     assert 0 <= start_state < task.num_states
     assert len(task.actions) > 1
-    cur_state, reward = task.perform_action(1)
-    assert np.isscalar(cur_state)
-    assert np.isscalar(reward)
 
 
 def test_actions():
-    task = domains.FullyObservableSimpleMazeTask(maze)
+    task = domains.GridWorld(maze)
     eq_(task.num_actions, len(task.actions))
     is_S_action = [action[0] == 1 and action[1] == 0 for action in task.actions]
     assert np.sum(is_S_action) == 1
@@ -45,7 +43,7 @@ def test_actions():
 def test_goals():
     # Since there is only one possible empty state, we can check the outcomes of all possible actions.
     for absorbing_end_state in [False, True]:
-        task = domains.FullyObservableSimpleMazeTask(maze, absorbing_end_state=absorbing_end_state)
+        task = domains.GridWorld(maze, absorbing_end_state=absorbing_end_state)
         task.reset()
         start_state = task.observe()
         eq_(start_state, 1*3 + 1)
@@ -63,15 +61,15 @@ def test_goals():
                     eq_(cur_state, task.num_states - 1)
                     eq_(reward, 0)
                 else:
-                    # We got bumped back to start.
-                    eq_(cur_state, start_state)
+                    # Episode ended.
+                    assert cur_state is None
             else:
                 eq_(cur_state, start_state)
                 eq_(reward, 0)
 
 
 def test_stochasticity():
-    task = domains.FullyObservableSimpleMazeTask(maze, action_error_prob=.5)
+    task = domains.GridWorld(maze, action_error_prob=.5)
 
     # Try to go South. Half the time we'll take a random action, and for 1/4 of
     # those we'll also go South, so we'll get a reward 1/2(1) + 1/2(1/4) = 5/8

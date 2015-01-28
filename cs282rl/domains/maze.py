@@ -58,7 +58,7 @@ def move_avoiding_walls(maze, position, action):
 
 
 
-class FullyObservableSimpleMazeTask(object):
+class GridWorld(object):
     """
     A simple task in a maze: get to the goal.
 
@@ -88,7 +88,8 @@ class FullyObservableSimpleMazeTask(object):
 
     GOAL_MARKER = '*'
 
-    # Internally, we represent being in the special absorbing end state as state=None.
+    # End-of-episode is internally represented as state=None. If the end state
+    # is absorbing, we present it as a virtual state with maximal index.
 
     def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10},
         action_error_prob=0, random_state=None):
@@ -122,7 +123,10 @@ class FullyObservableSimpleMazeTask(object):
         absorbing, the n*m+1th state is that absorbing state.
         """
         if self.state is None:
-            return self.num_states - 1
+            if self.absorbing_end_state:
+                return self.num_states - 1
+            else:
+                return None
         else:
             return np.ravel_multi_index(self.state, self.maze.shape)
 
@@ -141,8 +145,5 @@ class FullyObservableSimpleMazeTask(object):
         reward = self.rewards.get(self.maze[new_state], 0) + self.rewards.get(result, 0)
         if self.maze[new_state] == self.GOAL_MARKER:
             # Reached goal.
-            if self.absorbing_end_state:
-                self.state = None
-            else:
-                self.reset()
+            self.state = None
         return self.observe(), reward

@@ -69,12 +69,25 @@ class GridWorld(object):
         maze topology (see below)
 
     absorbing_end_state: boolean.
-        If True, after reaching the goal, we go into an absorbing zero-reward end state with the maximal index.
+        Normally, terminal states are represented as state=None. If this flag
+        is True, however, terminal states are instead represented as a numbered
+        state (with the maximal index) where all actions do nothing and give
+        no reward.
 
     rewards: dict of string to number. default: {'*': 10}.
-        Rewards obtained by being in a maze grid with the specified contents, or experiencing the
-        specified event (e.g., 'hit-wall', 'moved'). The contributions of content reward and event
-        reward are summed.
+        Rewards obtained by being in a maze grid with the specified contents,
+        or experiencing the specified event (e.g., 'hit-wall', 'moved'). The
+        contributions of content reward and event reward are summed. For
+        example, you might specify a cost for moving by passing
+        rewards={'*': 10, 'moved': -1}.
+
+    action_error_prob: float
+        With this probability, the requested action is ignored and a random
+        action is chosen instead.
+
+    random_state: None, int, or RandomState object
+        For repeatable experiments, you can pass a random state here. See
+        http://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html
 
     Notes
     -----

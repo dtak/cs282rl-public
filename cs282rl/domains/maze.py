@@ -81,6 +81,10 @@ class GridWorld(object):
         example, you might specify a cost for moving by passing
         rewards={'*': 10, 'moved': -1}.
 
+    terminal_markers: sequence of chars, default '*'
+        A grid cell containing any of these markers will be considered a
+        "terminal" state.
+
     action_error_prob: float
         With this probability, the requested action is ignored and a random
         action is chosen instead.
@@ -99,17 +103,16 @@ class GridWorld(object):
      'o': origin
     """
 
-    GOAL_MARKER = '*'
-
     # End-of-episode is internally represented as state=None. If the end state
     # is absorbing, we present it as a virtual state with maximal index.
 
     def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10},
-        action_error_prob=0, random_state=None):
+        terminal_markers='*', action_error_prob=0, random_state=None):
 
         self.maze = Maze(maze) if not isinstance(maze, Maze) else maze
         self.absorbing_end_state = absorbing_end_state
         self.rewards = rewards
+        self.terminal_markers = terminal_markers
         self.action_error_prob = action_error_prob
         self.random_state = check_random_state(random_state)
 
@@ -156,7 +159,7 @@ class GridWorld(object):
         self.state = new_state
 
         reward = self.rewards.get(self.maze[new_state], 0) + self.rewards.get(result, 0)
-        if self.maze[new_state] == self.GOAL_MARKER:
-            # Reached goal.
+        if self.maze[new_state] in self.terminal_markers:
+            # Episode complete.
             self.state = None
         return self.observe(), reward

@@ -38,8 +38,9 @@ def test_actions():
 
 def test_goals():
     # Since there is only one possible empty state, we can check the outcomes of all possible actions.
-    for absorbing_end_state in [False, True]:
-        task = domains.GridWorld(maze, absorbing_end_state=absorbing_end_state)
+    for test_terminal in [False, True]:
+        task = domains.GridWorld(maze, terminal_markers='*' if test_terminal else '')
+
         task.reset()
         start_state = task.observe()
         eq_(start_state, 1*3 + 1)
@@ -50,15 +51,13 @@ def test_goals():
             task.reset()
             cur_state, reward = task.perform_action(action_idx)
             if action[0] == 1 and action[1] == 0:
+                # Moving down got us the reward.
                 eq_(reward, 10)
-                if absorbing_end_state:
-                    eq_(cur_state, task.num_states - 1)
-                    cur_state, reward = task.perform_action(np.random.choice(4))
-                    eq_(cur_state, task.num_states - 1)
-                    eq_(reward, 0)
-                else:
+                if test_terminal:
                     # Episode ended.
                     assert cur_state is None
+                else:
+                    assert cur_state == 2*3 + 1
             else:
                 eq_(cur_state, start_state)
                 eq_(reward, 0)

@@ -68,12 +68,6 @@ class GridWorld(object):
     maze : list of strings or lists
         maze topology (see below)
 
-    absorbing_end_state: boolean.
-        Normally, terminal states are represented as state=None. If this flag
-        is True, however, terminal states are instead represented as a numbered
-        state (with the maximal index) where all actions do nothing and give
-        no reward.
-
     rewards: dict of string to number. default: {'*': 10}.
         Rewards obtained by being in a maze grid with the specified contents,
         or experiencing the specified event (e.g., 'hit-wall', 'moved'). The
@@ -103,14 +97,9 @@ class GridWorld(object):
      'o': origin
     """
 
-    # End-of-episode is internally represented as state=None. If the end state
-    # is absorbing, we present it as a virtual state with maximal index.
-
-    def __init__(self, maze, absorbing_end_state=False, rewards={'*': 10},
-        terminal_markers='*', action_error_prob=0, random_state=None):
+    def __init__(self, maze, rewards={'*': 10}, terminal_markers='*', action_error_prob=0, random_state=None):
 
         self.maze = Maze(maze) if not isinstance(maze, Maze) else maze
-        self.absorbing_end_state = absorbing_end_state
         self.rewards = rewards
         self.terminal_markers = terminal_markers
         self.action_error_prob = action_error_prob
@@ -121,8 +110,6 @@ class GridWorld(object):
         self.state = None
         self.reset()
         self.num_states = self.maze.shape[0] * self.maze.shape[1]
-        if absorbing_end_state:
-            self.num_states += 1
 
     def reset(self):
         """
@@ -133,16 +120,12 @@ class GridWorld(object):
 
     def observe(self):
         """
-        Return the current state as an integer.
+        Return the current state as an integer, or None if the episode is over.
 
-        The state is the index into the flattened maze. If the end state is
-        absorbing, the n*m+1th state is that absorbing state.
+        The state is the index into the flattened maze.
         """
         if self.state is None:
-            if self.absorbing_end_state:
-                return self.num_states - 1
-            else:
-                return None
+            return None
         else:
             return np.ravel_multi_index(self.state, self.maze.shape)
 

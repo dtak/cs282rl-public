@@ -1675,6 +1675,25 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Example-code-for-GridWorld-(Practical-0)">Example code for GridWorld (Practical 0)<a class="anchor-link" href="#Example-code-for-GridWorld-(Practical-0)">&#182;</a></h1>
+</div>
+</div>
+</div>
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Configure an environment that&#39;s like Python 3. It&#39;s the future, after all:</p>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
@@ -1689,6 +1708,15 @@ In&nbsp;[1]:
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Configure plotting.</p>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -1705,6 +1733,15 @@ In&nbsp;[2]:
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Import libraries.</p>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -1728,7 +1765,7 @@ In&nbsp;[4]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="kn">from</span> <span class="nn">cs282rl.domains</span> <span class="kn">import</span> <span class="n">Maze</span><span class="p">,</span> <span class="n">GridWorld</span>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">cs282rl.domains</span> <span class="kn">import</span> <span class="n">GridWorld</span>
 </pre></div>
 
 </div>
@@ -1736,10 +1773,19 @@ In&nbsp;[4]:
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The main domain class is called GridWorld. Run the following cell for its documentation.</p>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[5]:
+In&nbsp;[]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1747,91 +1793,6 @@ In&nbsp;[5]:
 </pre></div>
 
 </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area"><div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-Help on class GridWorld in module cs282rl.domains.maze:
-
-class GridWorld(builtins.object)
- |  A simple task in a maze: get to the goal.
- |  
- |  Parameters
- |  ----------
- |  
- |  maze : list of strings or lists
- |      maze topology (see below)
- |  
- |  absorbing_end_state: boolean.
- |      Normally, terminal states are represented as state=None. If this flag
- |      is True, however, terminal states are instead represented as a numbered
- |      state (with the maximal index) where all actions do nothing and give
- |      no reward.
- |  
- |  rewards: dict of string to number. default: {&apos;*&apos;: 10}.
- |      Rewards obtained by being in a maze grid with the specified contents,
- |      or experiencing the specified event (e.g., &apos;hit-wall&apos;, &apos;moved&apos;). The
- |      contributions of content reward and event reward are summed. For
- |      example, you might specify a cost for moving by passing
- |      rewards={&apos;*&apos;: 10, &apos;moved&apos;: -1}.
- |  
- |  terminal_markers: sequence of chars, default &apos;*&apos;
- |      A grid cell containing any of these markers will be considered a
- |      &quot;terminal&quot; state.
- |  
- |  action_error_prob: float
- |      With this probability, the requested action is ignored and a random
- |      action is chosen instead.
- |  
- |  random_state: None, int, or RandomState object
- |      For repeatable experiments, you can pass a random state here. See
- |      http://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html
- |  
- |  Notes
- |  -----
- |  
- |  Maze topology is expressed textually. Key:
- |   &apos;#&apos;: wall
- |   &apos;.&apos;: open (really, anything that&apos;s not &apos;#&apos;)
- |   &apos;*&apos;: goal
- |   &apos;o&apos;: origin
- |  
- |  Methods defined here:
- |  
- |  __init__(self, maze, absorbing_end_state=False, rewards={&apos;*&apos;: 10}, terminal_markers=&apos;*&apos;, action_error_prob=0, random_state=None)
- |  
- |  observe(self)
- |      Return the current state as an integer.
- |      
- |      The state is the index into the flattened maze. If the end state is
- |      absorbing, the n*m+1th state is that absorbing state.
- |  
- |  perform_action(self, action_idx)
- |      Perform an action (specified by index), yielding a new state and reward.
- |  
- |  reset(self)
- |      Reset the position to a starting position (an &apos;o&apos;), chosen at random.
- |  
- |  ----------------------------------------------------------------------
- |  Data descriptors defined here:
- |  
- |  __dict__
- |      dictionary for instance variables (if defined)
- |  
- |  __weakref__
- |      list of weak references to the object (if defined)
-
-
-</pre>
-</div>
-</div>
-
 </div>
 </div>
 
@@ -1848,7 +1809,7 @@ class GridWorld(builtins.object)
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[6]:
+In&nbsp;[5]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1879,7 +1840,7 @@ In&nbsp;[6]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[7]:
+In&nbsp;[6]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1920,7 +1881,7 @@ Current state: 4 of 15
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[8]:
+In&nbsp;[7]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1964,7 +1925,7 @@ New state: 7 Reward: 0
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[9]:
+In&nbsp;[8]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -2009,7 +1970,7 @@ New state: None Reward: 10
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[10]:
+In&nbsp;[9]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -2032,6 +1993,15 @@ In&nbsp;[10]:
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You may find this plotting routine helpful:</p>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
@@ -2039,7 +2009,12 @@ In&nbsp;[10]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre> 
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">plot_with_errbars</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mean</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">std</span><span class="p">,</span> <span class="n">mean</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">std</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;#d0d0d0&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
 </pre></div>
 
 </div>

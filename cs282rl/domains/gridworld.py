@@ -45,7 +45,7 @@ class Maze(object):
 
 def move_avoiding_walls(maze, position, action):
     """
-    Return the new position after moving.
+    Return the new position after moving, and the event that happened ('hit-wall' or 'moved')
     """
     # Compute new position
     new_position = position + action
@@ -70,7 +70,7 @@ class GridWorld(object):
 
     rewards: dict of string to number. default: {'*': 10}.
         Rewards obtained by being in a maze grid with the specified contents,
-        or experiencing the specified event (e.g., 'hit-wall', 'moved'). The
+        or experiencing the specified event (either 'hit-wall' or 'moved'). The
         contributions of content reward and event reward are summed. For
         example, you might specify a cost for moving by passing
         rewards={'*': 10, 'moved': -1}.

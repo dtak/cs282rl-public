@@ -1690,7 +1690,28 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Configure an environment that&#39;s like Python 3. It&#39;s the future, after all:</p>
+<h2 id="Fundamentals">Fundamentals<a class="anchor-link" href="#Fundamentals">&#182;</a></h2>
+</div>
+</div>
+</div>
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>If you haven&#39;t already, install the <code>cs282rl</code> Python package by running:</p>
+<pre><code>pip install -e git+git@github.com:dtak/cs282rl.git#egg=cs282rl
+</code></pre>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The support code will run in both Python 2 and Python 3. But let&#39;s configure even Python 2 to work more like Python 3 (it&#39;s the future, after all):</p>
 </div>
 </div>
 </div>
@@ -1778,6 +1799,16 @@ In&nbsp;[4]:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="The-GridWorld-domain">The GridWorld domain<a class="anchor-link" href="#The-GridWorld-domain">&#182;</a></h2>
+</div>
+</div>
+</div>
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <p>The main domain class is called GridWorld. Run the following cell for its documentation.</p>
 </div>
 </div>
@@ -1785,11 +1816,12 @@ In&nbsp;[4]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[]:
+In&nbsp;[5]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="n">help</span><span class="p">(</span><span class="n">GridWorld</span><span class="p">)</span>
+<div class="highlight"><pre><span class="n">GridWorld</span><span class="err">?</span>
+<span class="c"># You can also run `help(GridWorld)`.</span>
 </pre></div>
 
 </div>
@@ -1809,18 +1841,25 @@ In&nbsp;[]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[5]:
+In&nbsp;[19]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="n">maze</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">&#39;###&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#o#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#*#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;###&#39;</span><span class="p">]</span>
+<div class="highlight"><pre><span class="n">maze</span> <span class="o">=</span> <span class="p">[</span> <span class="c"># this is also GridWorld.samples[&#39;trivial&#39;].</span>
+    <span class="s">&#39;###&#39;</span><span class="p">,</span> <span class="c"># &#39;#&#39; = wall</span>
+    <span class="s">&#39;#o#&#39;</span><span class="p">,</span> <span class="c"># &#39;o&#39; = origin grid cell</span>
+    <span class="s">&#39;#.#&#39;</span><span class="p">,</span> <span class="c"># &#39;.&#39; = empty grid cell</span>
+    <span class="s">&#39;#*#&#39;</span><span class="p">,</span> <span class="c"># &#39;*&#39; = goal</span>
+    <span class="s">&#39;###&#39;</span><span class="p">]</span> 
 
-<span class="n">task</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">maze</span><span class="p">,</span> <span class="n">action_error_prob</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">task</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span>
+    <span class="n">maze</span><span class="p">,</span>
+    <span class="n">action_error_prob</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="c"># With this probability, the requested action is ignored and a random action is chosen instead.</span>
+    <span class="n">rewards</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;*&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s">&#39;moved&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;hit-wall&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">}</span> <span class="c"># The rewards for each grid cell contents, or action (summed)</span>
+
+    <span class="c"># Thought exercise: here the reward depends on previous state, action, and current state. Could you get the same result</span>
+    <span class="c"># only depending on the current state?</span>
+<span class="p">)</span>
 </pre></div>
 
 </div>
@@ -1840,7 +1879,7 @@ In&nbsp;[5]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[6]:
+In&nbsp;[16]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1881,7 +1920,7 @@ Current state: 4 of 15
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[7]:
+In&nbsp;[17]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1903,7 +1942,7 @@ In&nbsp;[7]:
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 Taking action 1
-New state: 7 Reward: 0
+New state: 7 Reward: -1
 
 </pre>
 </div>
@@ -1925,7 +1964,7 @@ New state: 7 Reward: 0
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[8]:
+In&nbsp;[18]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
@@ -1947,7 +1986,7 @@ In&nbsp;[8]:
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 Taking action 1
-New state: None Reward: 10
+New state: None Reward: 49
 
 </pre>
 </div>
@@ -1962,30 +2001,78 @@ New state: None Reward: 10
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Here's-a-larger-maze-to-get-you-started.">Here's a larger maze to get you started.<a class="anchor-link" href="#Here's-a-larger-maze-to-get-you-started.">&#182;</a></h2>
+<h2 id="Your-Turn">Your Turn<a class="anchor-link" href="#Your-Turn">&#182;</a></h2>
 </div>
 </div>
 </div>
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here&#39;s a larger maze to get you started.</p>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[9]:
+In&nbsp;[11]:
 </div>
 <div class="inner_cell">
     <div class="input_area">
-<div class="highlight"><pre><span class="n">maze</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">&#39;#########&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#..#....#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#..#..#.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#..#..#.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#..#.##.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#....*#.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#######.#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#o......#&#39;</span><span class="p">,</span>
-    <span class="s">&#39;#########&#39;</span><span class="p">]</span>
+<div class="highlight"><pre><span class="n">maze</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="o">.</span><span class="n">samples</span><span class="p">[</span><span class="s">&#39;larger&#39;</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">maze</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</pre></div>
 
-<span class="n">task</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">maze</span><span class="p">,</span> <span class="n">action_error_prob</span><span class="o">=.</span><span class="mi">1</span><span class="p">)</span>
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+#########
+#..#....#
+#..#..#.#
+#..#..#.#
+#..#.##.#
+#....*#.#
+#######.#
+#o......#
+#########
+
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For the real practical, configure a small probability of taking the wrong action.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">
+In&nbsp;[20]:
+</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class="highlight"><pre><span class="n">task</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">maze</span><span class="p">,</span> <span class="n">action_error_prob</span><span class="o">=.</span><span class="mi">1</span><span class="p">,</span> <span class="n">rewards</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;*&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s">&#39;moved&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s">&#39;hit-wall&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">})</span>
 </pre></div>
 
 </div>
@@ -2005,7 +2092,7 @@ In&nbsp;[9]:
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">
-In&nbsp;[10]:
+In&nbsp;[13]:
 </div>
 <div class="inner_cell">
     <div class="input_area">

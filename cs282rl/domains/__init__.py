@@ -1,3 +1,3 @@
-from .maze import Maze, GridWorld
+from .gridworld import GridWorld
 
-__all__ = ['Maze', 'GridWorld']
+__all__ = ['GridWorld']

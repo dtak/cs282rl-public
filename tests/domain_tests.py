@@ -4,6 +4,7 @@ import scipy.stats.distributions
 
 from nose.tools import *
 from cs282rl import domains
+from cs282rl.domains.gridworld import Maze
 
 maze = [
     '###',
@@ -12,7 +13,7 @@ maze = [
     '###']
 
 def test_maze_wrapper():
-    maze_wrapper = domains.Maze(maze)
+    maze_wrapper = Maze(maze)
     eq_(maze_wrapper[0, 0], '#')
     eq_(maze_wrapper[2, 1], '*')
     assert_raises(IndexError, lambda: maze_wrapper[-1, 0])
@@ -21,7 +22,7 @@ def test_maze_wrapper():
     eq_(list(sorted(open_positions)), [(1, 1), (2, 1)])
 
 
-def test_maze_basic():
+def test_gridworld_basic():
     task = domains.GridWorld(maze)
     start_state = task.observe()
     assert np.isscalar(start_state)

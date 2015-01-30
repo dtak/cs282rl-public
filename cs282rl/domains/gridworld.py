@@ -146,3 +146,24 @@ class GridWorld(object):
             # Episode complete.
             self.state = None
         return self.observe(), reward
+
+
+    samples = {
+        'trivial': [
+            '###',
+            '#o#',
+            '#.#',
+            '#*#',
+            '###'],
+
+        'larger': [
+            '#########',
+            '#..#....#',
+            '#..#..#.#',
+            '#..#..#.#',
+            '#..#.##.#',
+            '#....*#.#',
+            '#######.#',
+            '#o......#',
+            '#########']
+    }

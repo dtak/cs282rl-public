@@ -30,6 +30,10 @@ def test_gridworld_basic():
     assert len(task.actions) > 1
 
 
+def test_has_samples():
+    assert 'trivial' in domains.GridWorld.samples
+
+
 def test_actions():
     task = domains.GridWorld(maze)
     eq_(task.num_actions, len(task.actions))

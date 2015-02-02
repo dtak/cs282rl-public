@@ -1,4 +1,5 @@
 import numpy as np
+import numbers
 
 def check_random_state(seed):
     # From https://github.com/scikit-learn/scikit-learn/blob/master/sklearn/utils/validation.py

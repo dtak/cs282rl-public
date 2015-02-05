@@ -103,7 +103,7 @@ class GridWorld(object):
      'o': origin
     """
 
-    def __init__(self, maze, rewards={'*': 10}, terminal_markers='*', action_error_prob=0, random_state=None):
+    def __init__(self, maze, rewards={'*': 10}, terminal_markers='*', action_error_prob=0, random_state=None, directions="NSEW"):
 
         self.maze = Maze(maze) if not isinstance(maze, Maze) else maze
         self.rewards = rewards
@@ -111,7 +111,7 @@ class GridWorld(object):
         self.action_error_prob = action_error_prob
         self.random_state = check_random_state(random_state)
 
-        self.actions = [maze_actions[direction] for direction in "NSEW"]
+        self.actions = [maze_actions[direction] for direction in directions]
         self.num_actions = len(self.actions)
         self.state = None
         self.reset()

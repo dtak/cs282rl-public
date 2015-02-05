@@ -42,6 +42,12 @@ class Maze(object):
     def _tuplify(self, arr):
         return [tuple(position) for position in np.transpose(np.nonzero(arr))]
 
+    def __str__(self):
+        return '\n'.join(''.join(row) for row in self.topology.tolist())
+
+    def __repr__(self):
+        return 'Maze({})'.format(repr(self.topology.tolist()))
+
 
 def move_avoiding_walls(maze, position, action):
     """
@@ -110,6 +116,9 @@ class GridWorld(object):
         self.state = None
         self.reset()
         self.num_states = self.maze.shape[0] * self.maze.shape[1]
+
+    def __repr__(self):
+        return 'GridWorld(maze={maze!r}, rewards={rewards}, terminal_markers={terminal_markers}, action_error_prob={action_error_prob})'.format(**self.__dict__)
 
     def reset(self):
         """

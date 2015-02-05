@@ -176,3 +176,23 @@ class GridWorld(object):
             '#o......#',
             '#########']
     }
+
+
+def construct_cliff_task(width, height, goal_reward=50, move_reward=-1, cliff_reward=-100):
+    maze = ['.' * width] * (height - 1)  # middle empty region
+    maze.append('o' + 'X' * (width - 2) + '*') # bottom goal row
+
+    rewards = {
+        '*': goal_reward,
+        'moved': move_reward,
+        'hit-wall': move_reward,
+        'X': cliff_reward
+    }
+
+    return GridWorld(maze, rewards=rewards, terminal_markers='*X')
+
+
+def construct_chain_task(left_length, left_reward, right_length, right_reward, move_penalty=-1):
+    maze = ['L' + ('.' * left_length) + 'o' + ('.' * right_length) + 'R']
+    rewards = {'L': left_reward, 'R': right_reward, 'moved': move_penalty}
+    return GridWorld(maze, rewards=rewards, terminal_markers='LR', directions='EW')

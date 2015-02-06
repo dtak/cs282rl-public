@@ -18,29 +18,41 @@ def parse_topology(topology):
 
 class Maze(object):
     """
-    Simple wrapper around a NumPy 2D array to handle indexing and staying in bounds.
+    Simple wrapper around a NumPy 2D array to handle flattened indexing and staying in bounds.
     """
     def __init__(self, topology):
         self.topology = parse_topology(topology)
+        self.flat_topology = self.topology.ravel()
         self.shape = self.topology.shape
 
-    def in_bounds(self, position):
+    def in_bounds_flat(self, position):
+        return 0 <= position < np.product(self.shape)
+
+    def in_bounds_unflat(self, position):
         position = np.asarray(position)
         return np.all(position >= 0) and np.all(position < self.shape)
 
-    def __getitem__(self, position):
-        if not self.in_bounds(position):
+    def get_flat(self, position):
+        if not self.in_bounds_flat(position):
+            raise IndexError("Position out of bounds: {}".format(position))
+        return self.flat_topology[position]
+
+    def get_unflat(self, position):
+        if not self.in_bounds_unflat(position):
             raise IndexError("Position out of bounds: {}".format(position))
         return self.topology[tuple(position)]
 
-    def positions_containing(self, x):
-        return self._tuplify(self.topology == x)
+    def flatten_index(self, index_tuple):
+        return np.ravel_multi_index(index_tuple, self.shape)
 
-    def positions_not_containing(self, x):
-        return self._tuplify(self.topology != x)
+    def unflatten_index(self, flattened_index):
+        return np.unravel_index(flattened_index, self.shape)
 
-    def _tuplify(self, arr):
-        return [tuple(position) for position in np.transpose(np.nonzero(arr))]
+    def flat_positions_containing(self, x):
+        return list(np.nonzero(self.flat_topology == x)[0])
+
+    def flat_positions_not_containing(self, x):
+        return list(np.nonzero(self.flat_topology != x)[0])
 
     def __str__(self):
         return '\n'.join(''.join(row) for row in self.topology.tolist())
@@ -51,13 +63,15 @@ class Maze(object):
 
 def move_avoiding_walls(maze, position, action):
     """
-    Return the new position after moving, and the event that happened ('hit-wall' or 'moved')
+    Return the new position after moving, and the event that happened ('hit-wall' or 'moved').
+
+    Works with the position and action as a (row, column) array.
     """
     # Compute new position
     new_position = position + action
 
     # Compute collisions with walls, including implicit walls at the ends of the world.
-    if not maze.in_bounds(new_position) or maze[new_position] == '#':
+    if not maze.in_bounds_unflat(new_position) or maze.get_unflat(new_position) == '#':
         return position, 'hit-wall'
 
     return new_position, 'moved'
@@ -124,7 +138,7 @@ class GridWorld(object):
         """
         Reset the position to a starting position (an 'o'), chosen at random.
         """
-        options = self.maze.positions_containing('o')
+        options = self.maze.flat_positions_containing('o')
         self.state = options[self.random_state.choice(len(options))]
 
     def observe(self):
@@ -136,7 +150,7 @@ class GridWorld(object):
         if self.state is None:
             return None
         else:
-            return np.ravel_multi_index(self.state, self.maze.shape)
+            return self.maze.unflatten_index(self.state)
 
     def perform_action(self, action_idx):
         """Perform an action (specified by index), yielding a new state and reward."""
@@ -147,10 +161,10 @@ class GridWorld(object):
         if self.action_error_prob and self.random_state.rand() < self.action_error_prob:
             action_idx = self.random_state.choice(self.num_actions)
         action = self.actions[action_idx]
-        new_state, result = move_avoiding_walls(self.maze, self.state, action)
-        self.state = new_state
+        new_state_tuple, result = move_avoiding_walls(self.maze, self.maze.unflatten_index(self.state), action)
+        self.state = self.maze.flatten_index(new_state_tuple)
 
-        reward = self.rewards.get(self.maze[new_state], 0) + self.rewards.get(result, 0)
+        reward = self.rewards.get(self.maze.get_flat(self.state), 0) + self.rewards.get(result, 0)
         if self.maze[new_state] in self.terminal_markers:
             # Episode complete.
             self.state = None

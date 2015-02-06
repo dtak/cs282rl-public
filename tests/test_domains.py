@@ -14,13 +14,23 @@ maze = [
 
 def test_maze_wrapper():
     maze_wrapper = Maze(maze)
-    assert maze_wrapper[0, 0] == '#'
-    assert maze_wrapper[2, 1] == '*'
+    assert maze_wrapper.flatten_index((2, 1)) == 2 * 3 + 1
+    assert maze_wrapper.unflatten_index(2 * 3 + 1) == (2, 1)
+    assert maze_wrapper.get_flat(0) == '#'
+    assert maze_wrapper.get_unflat((0, 0)) == '#'
+    assert maze_wrapper.get_flat(2*3 + 1) == '*'
+    assert maze_wrapper.get_unflat((2, 1)) == '*'
     with pytest.raises(IndexError):
-        maze_wrapper[-1, 0]
-    assert maze_wrapper.positions_containing('*') == [(2, 1)]
-    open_positions = maze_wrapper.positions_not_containing('#')
-    assert list(sorted(open_positions)) == [(1, 1), (2, 1)]
+        maze_wrapper.get_flat(-1)
+    with pytest.raises(IndexError):
+        maze_wrapper.get_flat(3 * 4)
+    with pytest.raises(IndexError):
+        maze_wrapper.get_unflat([-1, 0])
+    with pytest.raises(IndexError):
+        maze_wrapper.get_unflat([3, 4])
+    assert maze_wrapper.flat_positions_containing('*') == [2 * 3 + 1]
+    open_positions = maze_wrapper.flat_positions_not_containing('#')
+    assert list(sorted(open_positions)) == [1 * 3 + 1, 2 * 3 + 1]
 
 
 def test_gridworld_basic():

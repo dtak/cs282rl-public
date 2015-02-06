@@ -168,6 +168,11 @@ class GridWorld(object):
         reward = self.rewards.get(self.maze.get_flat(self.state), 0) + self.rewards.get(result, 0)
         return self.observe(), reward
 
+    ### Old API, where terminal states were None.
+
+    def observe_old(self):
+        return None if self.is_terminal(self.state) else self.state
+
     def perform_action_old(self, action_idx):
         new_state, reward = self.perform_action(action_idx)
         if self.is_terminal(new_state):

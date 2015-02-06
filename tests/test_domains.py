@@ -93,7 +93,7 @@ def test_old_API_goals():
         task = domains.GridWorld(maze, terminal_markers='*' if test_terminal else '')
 
         task.reset()
-        start_state = task.observe()
+        start_state = task.observe_old()
         assert start_state == 1*3 + 1
 
         resulting_states = []
@@ -107,6 +107,7 @@ def test_old_API_goals():
                 if test_terminal:
                     # Episode ended.
                     assert cur_state is None
+                    assert task.observe_old() is None
                 else:
                     assert cur_state == 2*3 + 1
             else:

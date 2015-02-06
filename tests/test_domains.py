@@ -60,12 +60,47 @@ def test_goals():
         task.reset()
         start_state = task.observe()
         assert start_state == 1*3 + 1
+        assert not task.is_terminal(start_state)
 
         resulting_states = []
         resulting_rewards = []
         for action_idx, action in enumerate(task.actions):
             task.reset()
             cur_state, reward = task.perform_action(action_idx)
+            if action[0] == 1 and action[1] == 0:
+                # Moving down got us the reward.
+                assert reward == 10
+                assert cur_state == 2*3 + 1
+                if test_terminal:
+                    # This state is "terminal": nothing does anything here.
+                    assert task.is_terminal(cur_state)
+                    for action2 in task.actions:
+                        cur_state, reward = task.perform_action(action_idx)
+                        assert cur_state == 2*3 + 1
+                        assert reward == 0
+                else:
+                    assert not task.is_terminal(cur_state)
+            else:
+                assert cur_state == start_state
+                assert reward == 0
+
+
+def test_old_API_goals():
+    # This is exactly the same as the old test_goals, so we make sure not to break people using the old API.
+
+    # Since there is only one possible empty state, we can check the outcomes of all possible actions.
+    for test_terminal in [False, True]:
+        task = domains.GridWorld(maze, terminal_markers='*' if test_terminal else '')
+
+        task.reset()
+        start_state = task.observe()
+        assert start_state == 1*3 + 1
+
+        resulting_states = []
+        resulting_rewards = []
+        for action_idx, action in enumerate(task.actions):
+            task.reset()
+            cur_state, reward = task.perform_action_old(action_idx)
             if action[0] == 1 and action[1] == 0:
                 # Moving down got us the reward.
                 assert reward == 10

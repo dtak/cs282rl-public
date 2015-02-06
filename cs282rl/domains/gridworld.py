@@ -141,21 +141,22 @@ class GridWorld(object):
         options = self.maze.flat_positions_containing('o')
         self.state = options[self.random_state.choice(len(options))]
 
+    def is_terminal(self, state):
+        """Check if the given state is a terminal state."""
+        return self.maze.get_flat(state) in self.terminal_markers
+
     def observe(self):
         """
-        Return the current state as an integer, or None if the episode is over.
+        Return the current state as an integer.
 
         The state is the index into the flattened maze.
         """
-        if self.state is None:
-            return None
-        else:
-            return self.maze.unflatten_index(self.state)
+        return self.state
 
     def perform_action(self, action_idx):
         """Perform an action (specified by index), yielding a new state and reward."""
         # In the absorbing end state, nothing does anything.
-        if self.state is None:
+        if self.is_terminal(self.state):
             return self.observe(), 0
 
         if self.action_error_prob and self.random_state.rand() < self.action_error_prob:
@@ -165,10 +166,14 @@ class GridWorld(object):
         self.state = self.maze.flatten_index(new_state_tuple)
 
         reward = self.rewards.get(self.maze.get_flat(self.state), 0) + self.rewards.get(result, 0)
-        if self.maze[new_state] in self.terminal_markers:
-            # Episode complete.
-            self.state = None
         return self.observe(), reward
+
+    def perform_action_old(self, action_idx):
+        new_state, reward = self.perform_action(action_idx)
+        if self.is_terminal(new_state):
+            return None, reward
+        else:
+            return new_state, reward
 
 
     samples = {

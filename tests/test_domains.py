@@ -130,4 +130,5 @@ def test_stochasticity():
         if reward:
             times_rewarded += 1
 
-    assert .025 < scipy.stats.distributions.binom.cdf(times_rewarded, N, 5./8) < .975
+    threshold = .01
+    assert threshold < scipy.stats.distributions.binom.cdf(times_rewarded, N, 5./8) < (1 - threshold)

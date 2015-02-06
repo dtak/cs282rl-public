@@ -2,7 +2,7 @@ from __future__ import absolute_import, print_function, unicode_literals, divisi
 import numpy as np
 import scipy.stats.distributions
 
-from nose.tools import *
+import pytest
 from cs282rl import domains
 from cs282rl.domains.gridworld import Maze
 
@@ -14,12 +14,13 @@ maze = [
 
 def test_maze_wrapper():
     maze_wrapper = Maze(maze)
-    eq_(maze_wrapper[0, 0], '#')
-    eq_(maze_wrapper[2, 1], '*')
-    assert_raises(IndexError, lambda: maze_wrapper[-1, 0])
-    eq_(maze_wrapper.positions_containing('*'), [(2, 1)])
+    assert maze_wrapper[0, 0] == '#'
+    assert maze_wrapper[2, 1] == '*'
+    with pytest.raises(IndexError):
+        maze_wrapper[-1, 0]
+    assert maze_wrapper.positions_containing('*') == [(2, 1)]
     open_positions = maze_wrapper.positions_not_containing('#')
-    eq_(list(sorted(open_positions)), [(1, 1), (2, 1)])
+    assert list(sorted(open_positions)) == [(1, 1), (2, 1)]
 
 
 def test_gridworld_basic():
@@ -36,7 +37,7 @@ def test_has_samples():
 
 def test_actions():
     task = domains.GridWorld(maze)
-    eq_(task.num_actions, len(task.actions))
+    assert task.num_actions == len(task.actions)
     is_S_action = [action[0] == 1 and action[1] == 0 for action in task.actions]
     assert np.sum(is_S_action) == 1
 
@@ -48,7 +49,7 @@ def test_goals():
 
         task.reset()
         start_state = task.observe()
-        eq_(start_state, 1*3 + 1)
+        assert start_state == 1*3 + 1
 
         resulting_states = []
         resulting_rewards = []
@@ -57,15 +58,15 @@ def test_goals():
             cur_state, reward = task.perform_action(action_idx)
             if action[0] == 1 and action[1] == 0:
                 # Moving down got us the reward.
-                eq_(reward, 10)
+                assert reward == 10
                 if test_terminal:
                     # Episode ended.
                     assert cur_state is None
                 else:
                     assert cur_state == 2*3 + 1
             else:
-                eq_(cur_state, start_state)
-                eq_(reward, 0)
+                assert cur_state == start_state
+                assert reward == 0
 
 
 def test_stochasticity():

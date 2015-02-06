@@ -209,9 +209,3 @@ def construct_cliff_task(width, height, goal_reward=50, move_reward=-1, cliff_re
     }
 
     return GridWorld(maze, rewards=rewards, terminal_markers='*X')
-
-
-def construct_chain_task(left_length, left_reward, right_length, right_reward, move_penalty=-1):
-    maze = ['L' + ('.' * left_length) + 'o' + ('.' * right_length) + 'R']
-    rewards = {'L': left_reward, 'R': right_reward, 'moved': move_penalty}
-    return GridWorld(maze, rewards=rewards, terminal_markers='LR', directions='EW')

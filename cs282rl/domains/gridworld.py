@@ -202,7 +202,16 @@ class GridWorld(object):
     }
 
 
-def construct_cliff_task(width, height, goal_reward=50, move_reward=-1, cliff_reward=-100):
+def construct_cliff_task(width, height, goal_reward=50, move_reward=-1, cliff_reward=-100, **kw):
+    """
+    Construct a 'cliff' task, a GridWorld with a "cliff" between the start and
+    goal. Falling off the cliff gives a large negative reward and ends the
+    episode.
+
+    Any other parameters, like action_error_prob, are passed on to the
+    GridWorld constructor.
+    """
+
     maze = ['.' * width] * (height - 1)  # middle empty region
     maze.append('o' + 'X' * (width - 2) + '*') # bottom goal row
 
@@ -213,4 +222,4 @@ def construct_cliff_task(width, height, goal_reward=50, move_reward=-1, cliff_re
         'X': cliff_reward
     }
 
-    return GridWorld(maze, rewards=rewards, terminal_markers='*X')
+    return GridWorld(maze, rewards=rewards, terminal_markers='*X', **kw)

@@ -29,8 +29,7 @@ class Maze(object):
         return 0 <= position < np.product(self.shape)
 
     def in_bounds_unflat(self, position):
-        position = np.asarray(position)
-        return np.all(position >= 0) and np.all(position < self.shape)
+        return 0 <= position[0] < self.shape[0] and 0 <= position[1] < self.shape[1]
 
     def get_flat(self, position):
         if not self.in_bounds_flat(position):

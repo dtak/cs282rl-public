@@ -38,7 +38,8 @@ def test_gridworld_basic():
     start_state = task.observe()
     assert np.isscalar(start_state)
     assert 0 <= start_state < task.num_states
-    assert len(task.actions) > 1
+    assert len(task.actions) == 4
+    assert task.num_actions == 4
 
 
 def test_has_samples():

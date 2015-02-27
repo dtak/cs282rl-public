@@ -1,6 +1,5 @@
 from __future__ import absolute_import, print_function, unicode_literals, division
 import numpy as np
-import scipy.stats.distributions
 
 import pytest
 from cs282rl import domains
@@ -125,12 +124,15 @@ def test_stochasticity():
     action_idx = [action[0] == 1 and action[1] == 0 for action in task.actions].index(True)
 
     times_rewarded = 0
-    N = 10000
+    # Hoeffding bound: P(|err| > epsilon) < 2exp(-2*n*epsilon**2)
+    epsilon = .01
+    delta = .0001
+    N = int(-np.log(delta/2) / (2 * epsilon**2) + 10)
     for i in range(N):
         task.reset()
         observation, reward = task.perform_action(action_idx)
         if reward:
             times_rewarded += 1
 
-    threshold = .01
-    assert threshold < scipy.stats.distributions.binom.cdf(times_rewarded, N, 5./8) < (1 - threshold)
+    correct_prob = 5./8
+    assert np.abs(times_rewarded / N - correct_prob) < epsilon

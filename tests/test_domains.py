@@ -115,6 +115,11 @@ def test_old_API_goals():
                 assert reward == 0
 
 
+def trials_required_to_bound_error(epsilon, delta):
+    # Hoeffding bound: P(|err| > epsilon) < 2exp(-2*n*epsilon**2)
+    return int(-np.log(delta/2) / (2 * epsilon**2) + 10)
+
+
 def test_stochasticity():
     task = domains.GridWorld(maze, action_error_prob=.5)
 
@@ -124,10 +129,8 @@ def test_stochasticity():
     action_idx = [action[0] == 1 and action[1] == 0 for action in task.actions].index(True)
 
     times_rewarded = 0
-    # Hoeffding bound: P(|err| > epsilon) < 2exp(-2*n*epsilon**2)
     epsilon = .01
-    delta = .0001
-    N = int(-np.log(delta/2) / (2 * epsilon**2) + 10)
+    N = trials_required_to_bound_error(epsilon=epsilon, delta=.0001)
     for i in range(N):
         task.reset()
         observation, reward = task.perform_action(action_idx)
@@ -136,3 +139,44 @@ def test_stochasticity():
 
     correct_prob = 5./8
     assert np.abs(times_rewarded / N - correct_prob) < epsilon
+
+
+def test_as_mdp():
+    tiny_maze = ['o.*']
+    task = domains.GridWorld(tiny_maze, action_error_prob=0., rewards={'*': 10, 'moved': -1, 'hit-wall': -1}, terminal_markers='*', directions="NSEW")
+    transition_probabilities, rewards = task.as_mdp()
+    def only(state):
+        res = [0] * 3
+        res[state] = 1.
+        return res
+    assert np.allclose(transition_probabilities, [
+        [only(0), only(0), only(1), only(0)],
+        [only(1), only(1), only(2), only(0)],
+        [only(2), only(2), only(2), only(2)]])
+
+
+def equal_ignoring_nan(a, b):
+    return np.all(np.isclose(a, b) | np.isnan(a - b))
+
+def test_as_mdp_stochastic():
+    tiny_maze = ['o.*']
+    task = domains.GridWorld(tiny_maze, action_error_prob=.5, rewards={'*': 10, 'moved': -1, 'hit-wall': -1}, terminal_markers='*', directions="NSEW")
+    transition_probabilities, rewards = task.as_mdp()
+
+    # Conservatively, use a union bound for the independent estimations for each state transition probability.
+    epsilon = .1
+    N = trials_required_to_bound_error(epsilon=epsilon, delta=.0001) * task.num_states
+    transitions_observed = np.zeros(task.num_states)
+    rewards_observed = np.zeros(task.num_states)
+    for state in range(task.num_states):
+        for action in range(task.num_actions):
+            transitions_observed.fill(0)
+            rewards_observed.fill(np.nan)
+            for i in range(N):
+                task.state = state
+                new_state, reward = task.perform_action(action)
+                transitions_observed[new_state] += 1
+                rewards_observed[new_state] = reward
+            print(state, action)
+            assert np.all(np.abs(transitions_observed / N - transition_probabilities[state, action]) < epsilon)
+            assert equal_ignoring_nan(rewards_observed, rewards[state, action])

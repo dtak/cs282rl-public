@@ -54,3 +54,8 @@ def test_chainworld_return_to_start():
 
     threshold = .01
     assert threshold < scipy.stats.distributions.binom.cdf(times_at_start, N, 1/2) < (1 - threshold)
+
+
+def test_chainworld_max_reward():
+    task = domains.ChainWorld(left_length=1, left_reward=10, right_length=500, right_reward=500, on_chain_reward=-1, p_return_to_start=.5)
+    assert task.get_max_reward() == 500

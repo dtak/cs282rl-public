@@ -201,6 +201,10 @@ class GridWorld(object):
 
         return transition_probabilities, rewards
 
+    def get_max_reward(self):
+        transition_probabilities, rewards = self.as_mdp()
+        return rewards.max()
+
     ### Old API, where terminal states were None.
 
     def observe_old(self):

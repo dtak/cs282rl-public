@@ -38,3 +38,6 @@ class ChainWorld(object):
         else:
             reward = self.on_chain_reward
         return self.observe(), reward
+
+    def get_max_reward(self):
+        return max(self.left_reward, self.right_reward)

@@ -180,3 +180,7 @@ def test_as_mdp_stochastic():
             print(state, action)
             assert np.all(np.abs(transitions_observed / N - transition_probabilities[state, action]) < epsilon)
             assert equal_ignoring_nan(rewards_observed, rewards[state, action])
+
+def test_max_reward():
+    task = domains.GridWorld(maze, action_error_prob=.5, rewards={'*': 10})
+    assert task.get_max_reward() == 10

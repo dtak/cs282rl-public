@@ -83,11 +83,7 @@ class HIVTreatment(object):
     def perform_action(self, action):
         self.t += 1
         eps1, eps2 = self.actions[action]
-        derivs = np.zeros_like(self.state)
-        def rhs(*args):
-            dsdt(derivs, *args)
-            return derivs
-        self.state = odeint(rhs, self.state, [0, self.dt],
+        self.state = odeint(dsdt, self.state, [0, self.dt],
                     args=(eps1, eps2), mxstep=1000)[-1]
         T1, T2, T1s, T2s, V, E = self.state
         # the reward function penalizes treatment because of side-effects
@@ -155,7 +151,13 @@ def visualize_hiv_history(state_history, action_history, handles=None):
     return handles
 
 
-def dsdt(out, s, t, eps1, eps2):
+def dsdt(s, t, eps1, eps2):
+    derivs = np.empty_like(s)
+    dsdt_(derivs, s, t, eps1, eps2)
+    return derivs
+
+
+def dsdt_(out, s, t, eps1, eps2):
     """
     system derivate per time. The unit of time are days.
     """
@@ -183,12 +185,6 @@ def dsdt(out, s, t, eps1, eps2):
 
     # decompose state
     T1, T2, T1s, T2s, V, E = s
-    #T1 = s[0]
-    #T2 = s[1]
-    #T1s = s[2]
-    #T2s = s[3]
-    #V = s[4]
-    #E = s[5]
 
     # compute derivatives
     tmp1 = (1. - eps1) * k1 * V * T1
@@ -208,4 +204,6 @@ try:
 except ImportError as e:
     print("Numba acceleration unavailable, expect slow runtime.")
 else:
-    dsdt = numba.jit(numba.void(numba.float64[:], numba.float64[:], numba.float64, numba.float64, numba.float64), nopython=True, nogil=True)(dsdt)
+    dsdt_ = numba.jit(
+        numba.void(numba.float64[:], numba.float64[:], numba.float64, numba.float64, numba.float64),
+        nopython=True, nogil=True)(dsdt_)

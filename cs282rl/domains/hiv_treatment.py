@@ -13,6 +13,10 @@ __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
 
+def random_policy(state, random_state):
+    return random_state.choice(4)
+
+
 class HIVTreatment(object):
     """
     Simulation of HIV Treatment. The aim is to find an optimal drug schedule.
@@ -83,6 +87,25 @@ class HIVTreatment(object):
         reward = - 0.1 * V - 2e4 * eps1 ** 2 - 2e3 * eps2 ** 2 + 1e3 * E
 
         return reward, self.observe()
+
+    @classmethod
+    def generate_batch(cls, num_trials, policy=random_policy, random_state=0, episode_length=200, **kw):
+        random_state = check_random_state(random_state)
+        state_histories = np.empty((num_trials, episode_length + 1, len(cls.state_names)))
+        action_histories = np.empty((num_trials, episode_length + 1), dtype=np.int8)
+
+        simulator = cls(**kw)
+        for trial in range(num_trials):
+            state_history = state_histories[trial]
+            action_history = action_histories[trial]
+
+            simulator.reset()
+            for episode in range(episode_length + 1):
+                state_history[episode] = state = simulator.observe()
+                action_history[episode] = action = policy(state, random_state)
+                simulator.perform_action(action)
+
+        return state_histories, action_histories
 
 
 def visualize_hiv_history(state_history, action_history, handles=None):

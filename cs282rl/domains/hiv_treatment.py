@@ -14,8 +14,14 @@ __license__ = "BSD 3-Clause"
 __author__ = "Christoph Dann"
 
 
-def random_policy(state, random_state):
-    return random_state.choice(4)
+def random_policy(state, rng):
+    return rng.choice(4)
+
+
+def always_do(action):
+    def policy(state, rng):
+        return action
+    return policy
 
 
 class HIVTreatment(object):
@@ -90,23 +96,28 @@ class HIVTreatment(object):
         return reward, self.observe()
 
     @classmethod
-    def generate_batch(cls, num_trials, policy=random_policy, random_state=0, episode_length=200, **kw):
-        random_state = check_random_state(random_state)
-        state_histories = np.empty((num_trials, episode_length + 1, len(cls.state_names)))
-        action_histories = np.empty((num_trials, episode_length + 1), dtype=np.int8)
+    def generate_batch(cls, num_patients, policy=random_policy, rng=0, episode_length=200, **kw):
+        rng = check_random_state(rng)
+        state_histories = np.empty((num_patients, episode_length + 1, len(cls.state_names)))
+        action_histories = np.empty((num_patients, episode_length + 1), dtype=np.int8)
+        reward_summaries = np.empty(num_patients)
 
         simulator = cls(**kw)
-        for trial in range(num_trials):
-            state_history = state_histories[trial]
-            action_history = action_histories[trial]
+        for patient in range(num_patients):
+            state_history = state_histories[patient]
+            action_history = action_histories[patient]
+            cum_reward = 0.
 
             simulator.reset()
             for episode in range(episode_length + 1):
                 state_history[episode] = state = simulator.observe()
-                action_history[episode] = action = policy(state, random_state)
-                simulator.perform_action(action)
+                action_history[episode] = action = policy(state, rng)
+                reward, state = simulator.perform_action(action)
+                cum_reward += reward
 
-        return state_histories, action_histories
+            reward_summaries[patient] = cum_reward
+
+        return state_histories, action_histories, reward_summaries
 
 
 def visualize_hiv_history(state_history, action_history, handles=None):

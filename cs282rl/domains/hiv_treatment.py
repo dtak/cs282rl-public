@@ -60,12 +60,15 @@ class HIVTreatment(object):
     actions = np.array([[0., 0.], [.7, 0.], [.3, 0.], [.7, .3]])
     num_actions = 4
 
-    def __init__(self, logspace=True, dt=5):
+    def __init__(self, logspace=True, dt=5, model_derivatives=None):
         self.logspace = logspace
         if logspace:
             self.statespace_limits = np.array([[-5, 8]] * 6)
         else:
             self.statespace_limits = np.array([[0., 1e8]] * 6)
+        if model_derivatives is None:
+            model_derivatives = dsdt
+        self.model_derivatives = model_derivatives
         self.dt = dt
         self.reset()
 
@@ -83,7 +86,7 @@ class HIVTreatment(object):
     def perform_action(self, action):
         self.t += 1
         eps1, eps2 = self.actions[action]
-        self.state = odeint(dsdt, self.state, [0, self.dt],
+        self.state = odeint(self.model_derivatives, self.state, [0, self.dt],
                     args=(eps1, eps2), mxstep=1000)[-1]
         T1, T2, T1s, T2s, V, E = self.state
         # the reward function penalizes treatment because of side-effects

@@ -4,6 +4,7 @@ based on https://bitbucket.org/rlpy/rlpy/src/226cfcbd12fab017e0d9b96bc695b97e68e
 """
 import numpy as np
 from scipy.integrate import odeint
+from ..utils import check_random_state
 
 # Original attribution information:
 __copyright__ = "Copyright 2013, RLPy http://acl.mit.edu/RLPy"
@@ -115,7 +116,8 @@ def visualize_hiv_history(state_history, action_history, handles=None):
     Returns a "handles" array; if you pass it back in again, the drawing will be faster.
     """
 
-    history = np.concatenate([state_history, action_history[None,:]], axis=0)
+    import matplotlib.pyplot as plt
+    history = np.concatenate([state_history.T, action_history[None,:]], axis=0)
     num_dims, num_steps = history.shape
     names = list(HIVTreatment.state_names) + ["Action"]
     colors = ["b", "b", "b", "b", "r", "g", "k"]
@@ -125,7 +127,7 @@ def visualize_hiv_history(state_history, action_history, handles=None):
             num_dims, sharex=True, num="Domain", figsize=(12, 10))
         fig.subplots_adjust(hspace=0.1)
         for i, ax in enumerate(axes):
-            d = np.arange(num_steps + 1) * 5
+            d = np.arange(num_steps) * 5
             ax.set_ylabel(names[i])
             ax.locator_params(tight=True, nbins=4)
             handles.append(

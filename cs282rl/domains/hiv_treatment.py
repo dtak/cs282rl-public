@@ -15,10 +15,12 @@ __author__ = "Christoph Dann"
 
 
 def random_policy(state, rng):
+    """A policy that picks one of the 4 actions randomly."""
     return rng.choice(4)
 
 
 def always_do(action):
+    """Returns a policy that always takes the given action."""
     def policy(state, rng):
         return action
     return policy
@@ -96,6 +98,53 @@ class HIVTreatment(object):
 
     @classmethod
     def generate_batch(cls, num_patients, policy=random_policy, rng=0, episode_length=200, **kw):
+        """
+        Generate a batch of simulation traces for patients, following a given policy.
+
+        Parameters
+        ----------
+
+        num_patients : int
+            number of patients to simulate
+
+        policy : function (state, rng) -> action; default: random_policy
+            The policy to evaluate, specified as a function of the current state.
+            The policy function also takes a random number generator object
+            (http://docs.scipy.org/doc/numpy/reference/generated/numpy.random.RandomState.html)
+
+        rng : None, int, or RandomState object; default: 0
+            For repeatable experiments, you can pass a random state here. See
+            http://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html.
+            By default, a seed of 0 is used; pass `None` to seed randomly.
+
+        episode_length : int, default 200
+            The length of the simulation. With the default time step of 5 days, the default episode
+            length gives 1000-day treatments. Since both the initial and final observations are
+            included, the output vectors include `N = episode_length + 1` elements.
+
+
+        Any other keyword parameters will be passed on to the simulator, including: `dt` (the
+        observation/action interval, in days), `logspace` (boolean, whether observations should be
+        log-transformed), and `model_derivatives` (to override the simulation dynamics).
+
+        Returns
+        -------
+
+        A 3-tuple (state_histories, action_histories, reward_histories):
+
+        state_histories : NumPy ndarray with shape (num_patients, N, 6), `float` dtype
+            For each patient, the state vector at each step.
+
+        action_histories : NumPy ndarray with shape (num_patients, N), `int` dtype
+            For each patient, the action chosen by the policy at each step.
+
+        reward_histories : NumPy ndarray with shape (num_patients, N), `float` dtype
+            For each patient, the reward obtained after taking the corresponding action at
+            each step.
+
+        The final action and reward represent moving past the observation window, so
+        you may want to ignore them.
+        """
         rng = check_random_state(rng)
         state_histories = np.empty((num_patients, episode_length + 1, len(cls.state_names)))
         action_histories = np.empty((num_patients, episode_length + 1), dtype=np.int8)

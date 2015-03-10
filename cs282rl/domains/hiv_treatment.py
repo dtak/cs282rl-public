@@ -1,6 +1,6 @@
 """HIV Treatment domain
 
-based on https://bitbucket.org/rlpy/rlpy/src/226cfcbd12fab017e0d9b96bc695b97e68ef4e07/rlpy/Domains/HIVTreatment.py
+based on https://bitbucket.org/rlpy/rlpy/src/master/rlpy/Domains/HIVTreatment.py
 """
 import numpy as np
 from scipy.integrate import odeint
@@ -59,7 +59,7 @@ class HIVTreatment(object):
 
     """
     state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
-    actions = np.array([[0., 0.], [.7, 0.], [.3, 0.], [.7, .3]])
+    eps_values_for_actions = np.array([[0., 0.], [.7, 0.], [.3, 0.], [.7, .3]])
     num_actions = 4
 
     def __init__(self, logspace=True, dt=5, model_derivatives=None):
@@ -87,9 +87,9 @@ class HIVTreatment(object):
 
     def perform_action(self, action):
         self.t += 1
-        eps1, eps2 = self.actions[action]
+        eps1, eps2 = self.eps_values_for_actions[action]
         self.state = odeint(self.model_derivatives, self.state, [0, self.dt],
-                    args=(eps1, eps2), mxstep=1000)[-1]
+                            args=(eps1, eps2), mxstep=1000)[-1]
         T1, T2, T1s, T2s, V, E = self.state
         # the reward function penalizes treatment because of side-effects
         reward = - 0.1 * V - 2e4 * eps1 ** 2 - 2e3 * eps2 ** 2 + 1e3 * E
@@ -170,7 +170,7 @@ def visualize_hiv_history(state_history, action_history, handles=None):
     """
 
     import matplotlib.pyplot as plt
-    history = np.concatenate([state_history.T, action_history[None,:]], axis=0)
+    history = np.concatenate([state_history.T, action_history[None, :]], axis=0)
     num_dims, num_steps = history.shape
     names = list(HIVTreatment.state_names) + ["Action"]
     colors = ["b", "b", "b", "b", "r", "g", "k"]

@@ -99,24 +99,18 @@ class HIVTreatment(object):
         rng = check_random_state(rng)
         state_histories = np.empty((num_patients, episode_length + 1, len(cls.state_names)))
         action_histories = np.empty((num_patients, episode_length + 1), dtype=np.int8)
-        reward_summaries = np.empty(num_patients)
+        reward_histories = np.empty((num_patients, episode_length + 1))
 
         simulator = cls(**kw)
         for patient in range(num_patients):
-            state_history = state_histories[patient]
-            action_history = action_histories[patient]
-            cum_reward = 0.
-
             simulator.reset()
             for episode in range(episode_length + 1):
-                state_history[episode] = state = simulator.observe()
-                action_history[episode] = action = policy(state, rng)
+                state_histories[patient, episode] = state = simulator.observe()
+                action_histories[patient, episode] = action = policy(state, rng)
                 reward, state = simulator.perform_action(action)
-                cum_reward += reward
+                reward_histories[patient, episode] = reward
 
-            reward_summaries[patient] = cum_reward
-
-        return state_histories, action_histories, reward_summaries
+        return state_histories, action_histories, reward_histories
 
 
 def visualize_hiv_history(state_history, action_history, handles=None):

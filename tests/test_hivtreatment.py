@@ -27,3 +27,7 @@ def test_batch_generation():
 
     state_histories, action_histories, reward_histories = (
         hiv_treatment.HIVTreatment.generate_batch(num_patients=num_patients, policy=hiv_treatment.always_do(2)))
+
+    # Just assert this doesn't crash:
+    handles = hiv_treatment.visualize_hiv_history(state_histories[0], action_histories[0])
+    hiv_treatment.visualize_hiv_history(state_histories[1], action_histories[1], handles=handles)

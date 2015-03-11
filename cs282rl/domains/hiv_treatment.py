@@ -97,7 +97,7 @@ class HIVTreatment(object):
         return reward, self.observe()
 
     @classmethod
-    def generate_batch(cls, num_patients, policy=random_policy, rng=0, episode_length=200, **kw):
+    def generate_batch(cls, num_patients, policy=random_policy, rng=None, episode_length=200, **kw):
         """
         Generate a batch of simulation traces for patients, following a given policy.
 
@@ -112,10 +112,9 @@ class HIVTreatment(object):
             The policy function also takes a random number generator object
             (http://docs.scipy.org/doc/numpy/reference/generated/numpy.random.RandomState.html)
 
-        rng : None, int, or RandomState object; default: 0
+        rng : None, int, or RandomState object; default: None
             For repeatable experiments, you can pass a random state here. See
             http://scikit-learn.org/stable/modules/generated/sklearn.utils.check_random_state.html.
-            By default, a seed of 0 is used; pass `None` to seed randomly.
 
         episode_length : int, default 200
             The length of the simulation. With the default time step of 5 days, the default episode

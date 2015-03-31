@@ -58,7 +58,7 @@ class HIVTreatment(object):
 
 
     """
-    state_names = ("T1", "T1*", "T2", "T2*", "V", "E")
+    state_names = ("T1", "T2", "T1*", "T2*", "V", "E")
     eps_values_for_actions = np.array([[0., 0.], [.7, 0.], [0., .3], [.7, .3]])
     num_actions = 4
 

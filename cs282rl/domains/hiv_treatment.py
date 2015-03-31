@@ -221,11 +221,11 @@ def dsdt_(out, s, t, eps1, eps2):
     c = 13.
     rho1 = 1.
     rho2 = 1.
-    lambdaE = 1
+    lambdaE = 1.
     bE = 0.3
-    Kb = 100
+    Kb = 100.
     d_E = 0.25
-    Kd = 500
+    Kd = 500.
     deltaE = 0.1
 
     # decompose state
